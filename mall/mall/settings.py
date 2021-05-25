@@ -200,3 +200,11 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'utils.exceptions.exception_handler',
 }
+
+
+# 我们限制是采用django自带的用户模型,因为使用django自带的认证模型可以使用 django自带的认证系统
+# 因为我们制定了自定义的用户模型,我们需要告知django 你需要使用我定义的类
+# 我们通过 AUTH_USER_MODEL = '应用.用户类'
+# 注意事项: AUTH_USER_MODEL的值 只能有一个.
+#
+AUTH_USER_MODEL = 'users.User'
