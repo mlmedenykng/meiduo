@@ -32,3 +32,25 @@ class RegisterUsernameView(APIView):
         }
 
         return Response(context)
+
+
+class RegisterMobileView(APIView):
+    """
+    GET     /users/phones/(?P<mobile>1[345789]\d{9})/count/
+
+    GET     /users/phones/?mobile=xxxxx
+    POST    /users/phones/      mobile=xxxxx
+    根据用户提交的手机号,判断是否存在该手机号
+    """
+
+
+    def get(self,request,mobile):
+
+        count = User.objects.filter(mobile=mobile).count()
+
+        context = {
+            'count':count,
+            'mobile':mobile     #可选
+        }
+
+        return Response(context)
