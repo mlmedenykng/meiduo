@@ -1,0 +1,3 @@
+#coding:utf8
+
+IMAGE_CODE_EXPIRE_TIME = 60
