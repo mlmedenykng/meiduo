@@ -9,6 +9,11 @@ from . import constants
 from django.http import HttpResponse
 
 from rest_framework.views import APIView
+
+from rest_framework.generics import GenericAPIView
+
+from .serializers import RegisterSMSCodeSerializer
+
 # Create your views here.
 
 class RegisterImageCodeView(APIView):
@@ -42,4 +47,42 @@ class RegisterImageCodeView(APIView):
         # content_type =  mime
         # text/javascript image/jpeg
         return HttpResponse(image,content_type='image/jpeg')
+
+# APIView
+# GenericAPIView
+# ListAPIView,CreateAPIView
+class RegisterSMSCodeView(GenericAPIView):
+
+    """
+    根据用户提交的验证码,发送短信验证码
+
+    GET    /verifications/smscodes/(?P<mobile>1[345789]\d{9})/?text=xxxx & image_code_id=xxxx
+
+
+
+    1. 当我们点击按钮的时候 ,首先应该把 验证码的内容发送给我 我进行校验
+    2. 校验成功了,我们需要给手机发送短信验证码
+    3. 把短信存起来,设置有效期
+    4. 我们需要设置发送的标记,放置用户频繁操作
+
+    """
+
+    serializer_class = RegisterSMSCodeSerializer
+
+    def get(self,request,mobile):
+
+        # 1.验证码内容的校验(序列化器)
+        # 反序列化里有一步是进行数据的校验
+        serializer = self.get_serializer(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        # 判断用户是否已经有发送记录,防止用户频繁操作
+
+        # 生成短信验证码
+
+        # 记录发送状态
+
+        # 发送
+
+        pass
 
