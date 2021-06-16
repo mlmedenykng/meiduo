@@ -1,3 +1,5 @@
 #coding:utf8
 
 IMAGE_CODE_EXPIRE_TIME = 60
+
+SMS_CODE_EXIPRE_TIME = 5*60

@@ -14,6 +14,12 @@ from rest_framework.generics import GenericAPIView
 
 from .serializers import RegisterSMSCodeSerializer
 
+from random import randint
+
+from libs.yuntongxun.sms import CCP
+
+from rest_framework.response import Response
+from rest_framework import status
 # Create your views here.
 
 class RegisterImageCodeView(APIView):
@@ -75,14 +81,25 @@ class RegisterSMSCodeView(GenericAPIView):
         # 反序列化里有一步是进行数据的校验
         serializer = self.get_serializer(data=request.query_params)
         serializer.is_valid(raise_exception=True)
+        # 2.判断用户是否已经有发送记录,防止用户频繁操作
+        redis_conn = get_redis_connection('code')
 
-        # 判断用户是否已经有发送记录,防止用户频繁操作
+        flag = redis_conn.get('sms_flag_%s'%mobile)
+        if flag:
+            return Response(status=status.HTTP_429_TOO_MANY_REQUESTS)
 
-        # 生成短信验证码
+        # 3.生成短信验证码
+        sms_code = '%06d'%randint(0,999999)
+        # 4.记录发送状态
 
-        # 记录发送状态
+        #短信验证码记录
+        redis_conn.setex('sms_%s'%mobile,constants.SMS_CODE_EXIPRE_TIME,sms_code)
+        #记录 发送状态
+        redis_conn.setex('sms_flag_%s'%mobile,60,1)
 
         # 发送
+        ccp = CCP()
+        ccp.send_template_sms(mobile,[sms_code,5],1)
 
-        pass
+        return Response({'message':'ok'})
 
